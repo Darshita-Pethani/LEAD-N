@@ -15,12 +15,12 @@ export const MenuItems = [
         path: "/leads",
         active: true,
     },
-    {
-        label: "Customers",
-        icon: Users,
-        key: "customers",
-        path: "/customer",
-    },
+    // {
+    //     label: "Customers",
+    //     icon: Users,
+    //     key: "customers",
+    //     path: "/customer",
+    // },
     {
         label: "Manage Users",
         icon: Settings,
