@@ -18,17 +18,25 @@ export default function Login({ onLogin }) {
           user_Password: password
         }
       });
+      console.log('res: ', res);
 
       if (res.data.status === 'success') {
         localStorage.setItem('token', res.data.data.token);
         toast.success("Login successfull");
         if (onLogin) onLogin();
-        navigate('/');
+        // navigate('/');
+        if (res.data.page === null || res.data.page === "") {
+          localStorage.removeItem('forceChangePwd');
+          navigate('/');
+        } else {
+          localStorage.setItem('forceChangePwd', 'true');
+          navigate('/change-password');
+        }
       } else {
         toast.success(res.data.msg || 'Login failed');
       }
     } catch (err) {
-        toast.success(err.response?.data?.msg || 'Something went wrong');
+      toast.success(err.response?.data?.msg || 'Something went wrong');
     }
   };
 

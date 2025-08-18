@@ -32,18 +32,18 @@ export const MenuItems = [
                 key: "users",
                 path: "/users",
             },
-            {
-                label: "Roles",
-                icon: Shield,
-                key: "roles",
-                path: "/roles",
-            },
-            {
-                label: "Permissions",
-                icon: Shield,
-                key: "permissions",
-                path: "/permissions",
-            },
+            // {
+            //     label: "Roles",
+            //     icon: Shield,
+            //     key: "roles",
+            //     path: "/roles",
+            // },
+            // {
+            //     label: "Permissions",
+            //     icon: Shield,
+            //     key: "permissions",
+            //     path: "/permissions",
+            // },
         ],
     },
     {

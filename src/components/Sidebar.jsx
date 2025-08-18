@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
 import { MenuItems } from './MenuItems';
-import { Link, NavLink } from 'react-router-dom';
-import { User } from 'lucide-react';
+import { Link, NavLink, useNavigate } from 'react-router-dom';
+import { User, Lock, LogOut } from 'lucide-react';
 import { toast } from "react-toastify";
 
 const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
     const [openDropdowns, setOpenDropdowns] = useState({});
+    const navigate = useNavigate();
 
     const toggleDropdown = key => {
         setOpenDropdowns(prev => ({ ...prev, [key]: !prev[key] }));
@@ -13,10 +14,10 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
 
     const handleLogout = () => {
         localStorage.removeItem('token');
+        localStorage.removeItem('forceChangePwd');
         toast.success("Logout successfull");
         window.location.reload();
     };
-
 
     return (
         <>
@@ -40,17 +41,16 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
                         </NavLink>
                     </div>
 
-                    {
-                        sidebarOpen &&
+                    {sidebarOpen && (
                         <button
                             className="lg:hidden fixed top-4 right-1 z-40 text-white w-[30px] h-[30px] rounded-lg hover:bg-blue-800"
                             onClick={() => setSidebarOpen(!sidebarOpen)}
                         >
                             {sidebarOpen && '✕'}
                         </button>
-                    }
+                    )}
 
-
+                    {/* Navigation */}
                     <nav className="mt-6 flex flex-col gap-2 flex-1 px-4 pb-4 overflow-y-auto">
                         {MenuItems.map(item => (
                             item.children ? (
@@ -97,18 +97,23 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
                                 </NavLink>
                             )
                         ))}
-
-
-
                     </nav>
 
-                    <div className="p-4 border-t-[1px]">
+                    <div className="p-4 flex flex-col gap-2">
+                        <NavLink
+                            to="/change-password"
+                            onClick={() => setSidebarOpen(false)}
+                            className="w-full flex items-center gap-3 px-4 py-3 bg-blue-800 rounded-lg hover:bg-blue-900 transition-all text-sm font-semibold"
+                        >
+                            <Lock size={16} /> Change Password
+                        </NavLink>
+
                         <button
                             type="button"
                             onClick={handleLogout}
-                            className="w-full px-4 py-3 bg-gradient-to-r from-red-700 to-red-500 text-white rounded-lg hover:from-red-800 hover:to-red-600 font-bold shadow-xl transition-all"
+                            className="w-full flex items-center gap-3 px-4 py-3 bg-red-600 rounded-lg hover:bg-red-700 transition-all text-sm font-bold"
                         >
-                            Logout
+                            <LogOut size={16} /> Logout
                         </button>
                     </div>
                 </div>

@@ -163,7 +163,7 @@ export default function LeadsTable() {
           }
         }
       );
-      if (response.status == 200) {
+      if (response.status == 'success') {
         toast.success(res.data.msg || 'Staus updated successfully');
         await fetchLeadDetail(leadId);
         setShowLeadModal(false)
@@ -351,7 +351,7 @@ export default function LeadsTable() {
                 >
                   Created At {getSortIcon('created_at')}
                 </th>
-                <th className="text-center px-5 py-3 text-sm font-semibold text-blue-700 uppercase tracking-wide">Actions</th>
+                {/* <th className="text-center px-5 py-3 text-sm font-semibold text-blue-700 uppercase tracking-wide">Actions</th> */}
               </tr>
             </thead>
             <tbody className="bg-white">
@@ -387,7 +387,7 @@ export default function LeadsTable() {
                     <td className="px-5 py-4 text-gray-700">{lead.lead_Status}</td>
                     <td className="px-5 py-4 text-gray-700">{moment(lead.created_at).format('DD-MM-YYYY')}</td>
 
-                    <td className="px-5 py-4 text-gray-800 flex items-center gap-2">
+                    {/* <td className="px-5 py-4 text-gray-800 flex items-center gap-2">
                       <div className="relative group">
                         <button
                           className="p-2 text-blue-500 hover:bg-blue-100 rounded-full transition"
@@ -415,7 +415,7 @@ export default function LeadsTable() {
                           Delete
                         </span>
                       </div>
-                    </td>
+                    </td> */}
                   </tr>
                 ))
               )}
@@ -553,7 +553,7 @@ export default function LeadsTable() {
                 <option value="Contacted">Contacted</option>
                 <option value="cancelled">Cancelled</option>
                 <option value="not interested">Not Interested</option>
-                <option value="completed">Completed</option>
+                <option value="Completed">Completed</option>
               </select>
             </div>
 

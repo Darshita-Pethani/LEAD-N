@@ -3,7 +3,7 @@ import axios from 'axios';
 import config from '../config';
 import Modal from "./Model";
 import Swal from 'sweetalert2';
-import { Edit2, Trash2 } from 'lucide-react';
+import { Edit2, KeyRound, Trash2 } from 'lucide-react';
 import { toast } from "react-toastify";
 
 const DUMMY_USERS = [
@@ -209,7 +209,6 @@ export default function User() {
   };
 
   const handleDeleteUser = async (itemId) => {
-    console.log('itemId: ', itemId);
     Swal.fire({
       title: 'Are you sure?',
       text: "You won't be able to revert this!",
@@ -233,6 +232,26 @@ export default function User() {
     });
   };
 
+
+  const handleResetPwd = async (user) => {
+    try {
+      const token = localStorage.getItem("token");
+      let res = await axios.post(`${config.API_BASE_URL}/auth/app/set-default-pwd/`, { inputData: { userId: user } },
+        {
+          headers: {
+            Authorization: token,
+          },
+        }
+      );
+      if (res.data.status === 'success') {
+        toast.success(res.data.msg);
+      } else {
+        toast.error(res.data.msg);
+      }
+    } catch (error) {
+      toast.error('Error!', 'Failed to reset the password.');
+    }
+  }
 
   return (
     <div>
@@ -510,6 +529,22 @@ export default function User() {
                         Delete
                       </span>
                     </div>
+
+                    {user.role_Name !== 'Admin' && (
+                      <div className="relative group">
+                        <button
+                          onClick={() => handleResetPwd(user.user_Id)}
+                          className="p-2 text-yellow-600 hover:bg-yellow-100 rounded-full transition"
+                        >
+                          <KeyRound size={17} />
+                        </button>
+                        <span className="absolute bottom-full mb-1 left-1/2 -translate-x-1/2 px-2 py-1 
+                        text-xs text-white bg-gray-800 rounded opacity-0 group-hover:opacity-100 
+                        transition-opacity whitespace-nowrap z-10">
+                          Set Default Password
+                        </span>
+                      </div>
+                    )}
                   </td>
                 </tr>
               ))}
