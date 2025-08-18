@@ -379,11 +379,16 @@ export default function LeadsTable() {
                     }}
                   >
                     <td className="px-5 py-4 text-gray-800">{lead.index}</td>
-                    <td className="px-5 py-4 font-medium text-gray-700">{lead.lead_Title}</td>
-                    <td className="px-5 py-4 text-gray-700">{lead.lead_Description}</td>
-                    <td className="px-5 py-4 text-gray-700">{lead.lead_Source}</td>
-                    <td className="px-5 py-4 text-gray-700">{lead.lead_Contact_Name}</td>
-                    <td className="px-5 py-4 text-gray-700">{lead.lead_Contact_Email}</td>
+                    <td className="px-5 py-4 text-gray-700 whitespace-normal break-words max-w-xs">
+                      {lead.lead_Title}</td>
+                    <td className="px-5 py-4 text-gray-700 whitespace-normal break-words max-w-xs">
+                      {lead.lead_Description}</td>
+                    <td className="px-5 py-4 text-gray-700 whitespace-normal break-words max-w-xs">
+                      {lead.lead_Source}</td>
+                    <td className="px-5 py-4 text-gray-700 whitespace-normal break-words max-w-xs">
+                      {lead.lead_Contact_Name}</td>
+                    <td className="px-5 py-4 text-gray-700 whitespace-normal break-words max-w-xs">
+                      {lead.lead_Contact_Email}</td>
                     <td className="px-5 py-4 text-gray-700">{lead.lead_Status}</td>
                     <td className="px-5 py-4 text-gray-700">{moment(lead.created_at).format('DD-MM-YYYY')}</td>
 
