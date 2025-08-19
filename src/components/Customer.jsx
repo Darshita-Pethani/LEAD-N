@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import config from '../config';
-import Modal from './Model';
+import Modal from './otherComponents/Model';
 import Swal from 'sweetalert2';
 
 export default function Customers() {

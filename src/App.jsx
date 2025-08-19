@@ -1,8 +1,8 @@
 import React from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
-import Login from './components/Login';
-import AdminPanel from './components/AdminPanel';
-import LeadsTable from './components/LeadsTable';
+import Login from './components/authentication/Login';
+import AdminPanel from './components/otherComponents/Layout';
+import LeadsTable from './components/leads/LeadsTable';
 import User from './components/User';
 import Roles from './components/Roles';
 import ProtectedRoutes from './ProtectedRoutes';
@@ -10,8 +10,8 @@ import PublicRoute from './PublicRoute';
 import Permissions from './components/Permissions';
 import SalesLeadReport from './components/ReportPage';
 import Customers from './components/Customer';
-import { GlobalToastContainer } from './components/toastContainer';
-import ChangePassword from './components/ChangePassword';
+import { GlobalToastContainer } from './components/otherComponents/toastContainer';
+import ChangePassword from './components/authentication/ChangePassword';
 
 export default function App() {
   return (

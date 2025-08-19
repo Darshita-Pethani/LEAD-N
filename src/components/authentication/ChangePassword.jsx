@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Eye, EyeOff, CheckCircle2, XCircle } from "lucide-react";
 import { toast } from "react-toastify";
 import axios from "axios";
-import config from "../config";
+import config from "../../config";
 
 export default function ChangePassword() {
     const [oldPassword, setOldPassword] = useState("");

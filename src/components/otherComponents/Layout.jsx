@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import Sidebar from './Sidebar';
 import { Outlet } from 'react-router-dom';
 
-export default function AdminPanel() {
+export default function Layout() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   return (

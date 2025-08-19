@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import config from '../config';
-import Modal from "./Model";
+import Modal from "./otherComponents/Model";
 import Swal from 'sweetalert2';
 import { Edit2, KeyRound, Trash2 } from 'lucide-react';
 import { toast } from "react-toastify";
@@ -35,6 +35,7 @@ export default function User() {
   const [usersLoading, setUsersLoading] = useState(false);
   const [usersError, setUsersError] = useState('');
   const [addUserOpen, setAddUserOpen] = useState(false);
+  const [defaultPwd, setDefaultPwd] = useState(false);
   const [addUserLoading, setAddUserLoading] = useState(false);
   const [addUserFieldErrors, setAddUserFieldErrors] = useState({});
   const [addUserForm, setAddUserForm] = useState({
@@ -54,6 +55,7 @@ export default function User() {
   const [editUserOpen, setEditUserOpen] = useState(false);
   const [editUserData, setEditUserData] = useState(null);
   const token = localStorage.getItem("token");
+  const [defaultPwdModalOpen, setDefaultPwdModalOpen] = useState(false);
 
   const fetchUsers = async () => {
     setUsersLoading(true);
@@ -108,34 +110,6 @@ export default function User() {
     setAddUserForm({ ...addUserForm, [e.target.name]: e.target.value });
     setAddUserFieldErrors({ ...addUserFieldErrors, [e.target.name]: undefined });
   };
-
-  // const handleAddUser = async (e) => {
-  //   e.preventDefault();
-  //   setAddUserLoading(true);
-  //   setAddUserFieldErrors({});
-  //   try {
-  //     const res = await axios.post(`${config.API_BASE_URL}/user/create-user`, {
-  //       inputData: { formData: addUserForm }
-  //     });
-  //     if (res.data.status === 'success') {
-  //       setAddUserForm({
-  //         userName: '',
-  //         userEmail: '',
-  //         userPassword: '',
-  //         userPassword_confirmation: '',
-  //         roleId: ''
-  //       });
-  //       setAddUserOpen(false);
-  //       setAddUserFieldErrors({});
-  //       fetchUsers();
-  //     } else if (res.data.status === 'error' && res.data.errors) {
-  //       setAddUserFieldErrors(res.data.errors);
-  //     } else {
-  //     }
-  //   } catch (e) {
-  //   }
-  //   setAddUserLoading(false);
-  // };
 
   const handleOpenAddUser = () => {
     setAddUserOpen(!addUserOpen);
@@ -228,6 +202,8 @@ export default function User() {
     }
   };
 
+
+
   const handleDeleteUser = async (itemId) => {
     Swal.fire({
       title: 'Are you sure?',
@@ -269,6 +245,8 @@ export default function User() {
       );
       if (res.data.status === 'success') {
         toast.success(res.data.msg);
+        setDefaultPwd(res.data.defaultPassword);
+        setDefaultPwdModalOpen(true);
       } else {
         toast.error(res.data.msg);
       }
@@ -276,6 +254,8 @@ export default function User() {
       toast.error('Error!', 'Failed to reset the password.');
     }
   }
+
+  console.log(editUserData, "editUserDataeditUserData")
 
   return (
     <div>
@@ -289,98 +269,8 @@ export default function User() {
         </button>
       </div>
 
-      {/* {addUserOpen && (
-        <form onSubmit={handleAddUser} className="mb-6 grid gap-4 sm:grid-cols-2">
-          <div>
-            <input
-              name="userName"
-              value={addUserForm.userName}
-              onChange={handleAddUserInputChange}
-              placeholder="Name"
-              className={`border px-3 py-2 rounded w-full ${addUserFieldErrors.userName ? 'border-red-500' : ''}`}
-              required
-            />
-            {addUserFieldErrors.userName && (
-              <div className="text-red-600 text-sm mt-1">{addUserFieldErrors.userName[0]}</div>
-            )}
-          </div>
-          <div>
-            <input
-              name="userEmail"
-              value={addUserForm.userEmail}
-              onChange={handleAddUserInputChange}
-              placeholder="Email"
-              type="email"
-              className={`border px-3 py-2 rounded w-full ${addUserFieldErrors.userEmail ? 'border-red-500' : ''}`}
-              required
-            />
-            {addUserFieldErrors.userEmail && (
-              <div className="text-red-600 text-sm mt-1">{addUserFieldErrors.userEmail[0]}</div>
-            )}
-          </div>
-          <div>
-            <input
-              name="userPassword"
-              value={addUserForm.userPassword}
-              onChange={handleAddUserInputChange}
-              placeholder="Password"
-              type="password"
-              className={`border px-3 py-2 rounded w-full ${addUserFieldErrors.userPassword ? 'border-red-500' : ''}`}
-              required
-            />
-            {addUserFieldErrors.userPassword && (
-              <div className="text-red-600 text-sm mt-1">{addUserFieldErrors.userPassword[0]}</div>
-            )}
-          </div>
-          <div>
-            <input
-              name="userPassword_confirmation"
-              value={addUserForm.userPassword_confirmation}
-              onChange={handleAddUserInputChange}
-              placeholder="Confirm Password"
-              type="password"
-              className={`border px-3 py-2 rounded w-full ${addUserFieldErrors.userPassword_confirmation ? 'border-red-500' : ''}`}
-              required
-            />
-            {addUserFieldErrors.userPassword_confirmation && (
-              <div className="text-red-600 text-sm mt-1">{addUserFieldErrors.userPassword_confirmation[0]}</div>
-            )}
-          </div>
-          <div className="sm:col-span-2">
-            <select
-              name="roleId"
-              value={addUserForm.roleId}
-              onChange={handleAddUserInputChange}
-              className={`border px-3 py-2 rounded w-full ${addUserFieldErrors.roleId ? 'border-red-500' : ''}`}
-              required
-            >
-              <option value="">Select Role</option>
-              {rolesForUserLoading ? (
-                <option disabled>Loading...</option>
-              ) : (
-                rolesForUser.map(role => (
-                  <option key={role.role_Id} value={role.role_Id}>
-                    {role.role_Name}
-                  </option>
-                ))
-              )}
-            </select>
-            {addUserFieldErrors.roleId && (
-              <div className="text-red-600 text-sm mt-1">{addUserFieldErrors.roleId[0]}</div>
-            )}
-          </div>
-          <button
-            type="submit"
-            className="sm:col-span-2 px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700"
-            disabled={addUserLoading}
-          >
-            {addUserLoading ? 'Adding...' : 'Create User'}
-          </button>
-        </form>
-      )} */}
-
       <Modal
-        isOpen={addUserOpen || editUserOpen}
+        isOpen={addUserOpen || (editUserOpen && editUserData)}
         onClose={() => {
           setAddUserOpen(false);
           setEditUserOpen(false);
@@ -388,111 +278,111 @@ export default function User() {
         }}
         title={editUserData ? 'Edit User' : 'Add User'}
       >
-        <form onSubmit={handleSaveUser} className="grid gap-4">
-          <div>
-            <input
-              name="userName"
-              value={addUserForm.userName}
-              onChange={handleAddUserInputChange}
-              placeholder="Name"
-              className={`outline-none border px-3 py-2 rounded w-full ${addUserFieldErrors.userName ? 'border-red-500' : ''}`}
-              required
-            />
-            {addUserFieldErrors.userName && (
-              <div className="text-red-600 text-sm mt-1">{addUserFieldErrors.userName[0]}</div>
-            )}
-          </div>
-          <div>
-            <input
-              name="userEmail"
-              value={addUserForm.userEmail}
-              onChange={handleAddUserInputChange}
-              placeholder="Email"
-              type="email"
-              className={`outline-none border px-3 py-2 rounded w-full ${addUserFieldErrors.userEmail ? 'border-red-500' : ''}`}
-              required
-            />
-            {addUserFieldErrors.userEmail && (
-              <div className="text-red-600 text-sm mt-1">{addUserFieldErrors.userEmail[0]}</div>
-            )}
-          </div>
-          {!editUserData && (
-            <>
-              <div>
-                <input
-                  name="userPassword"
-                  value={addUserForm.userPassword}
-                  onChange={handleAddUserInputChange}
-                  placeholder="Password"
-                  type="password"
-                  className={`outline-none border px-3 py-2 rounded w-full ${addUserFieldErrors.userPassword ? 'border-red-500' : ''}`}
-                  required
-                />
-                {addUserFieldErrors.userPassword && (
-                  <div className="text-red-600 text-sm mt-1">{addUserFieldErrors.userPassword[0]}</div>
-                )}
-              </div>
-              <div>
-                <input
-                  name="userPassword_confirmation"
-                  value={addUserForm.userPassword_confirmation}
-                  onChange={handleAddUserInputChange}
-                  placeholder="Confirm Password"
-                  type="password"
-                  className={`outline-none border px-3 py-2 rounded w-full ${addUserFieldErrors.userPassword_confirmation ? 'border-red-500' : ''}`}
-                  required
-                />
-                {addUserFieldErrors.userPassword_confirmation && (
-                  <div className="text-red-600 text-sm mt-1">{addUserFieldErrors.userPassword_confirmation[0]}</div>
-                )}
-              </div>
-            </>
-          )}
-          <div className="sm:col-span-2">
-            <select
-              name="roleId"
-              value={addUserForm.roleId}
-              onChange={handleAddUserInputChange}
-              className={`outline-none border px-3 py-2 rounded w-full ${addUserFieldErrors.roleId ? 'border-red-500' : ''}`}
-              required
-            >
-              <option value="">Select Role</option>
-              {rolesForUserLoading ? (
-                <option disabled>Loading...</option>
-              ) : (
-                rolesForUser.map(role => (
-                  <option key={role.role_Id} value={role.role_Id}>
-                    {role.role_Name}
-                  </option>
-                ))
+          <form onSubmit={handleSaveUser} className="grid gap-4">
+            <div>
+              <input
+                name="userName"
+                value={addUserForm.userName}
+                onChange={handleAddUserInputChange}
+                placeholder="Name"
+                className={`outline-none border px-3 py-2 rounded w-full ${addUserFieldErrors.userName ? 'border-red-500' : ''}`}
+                required
+              />
+              {addUserFieldErrors.userName && (
+                <div className="text-red-600 text-sm mt-1">{addUserFieldErrors.userName[0]}</div>
               )}
-            </select>
-            {addUserFieldErrors.roleId && (
-              <div className="text-red-600 text-sm mt-1">{addUserFieldErrors.roleId[0]}</div>
+            </div>
+            <div>
+              <input
+                name="userEmail"
+                value={addUserForm.userEmail}
+                onChange={handleAddUserInputChange}
+                placeholder="Email"
+                type="email"
+                className={`outline-none border px-3 py-2 rounded w-full ${addUserFieldErrors.userEmail ? 'border-red-500' : ''}`}
+                required
+              />
+              {addUserFieldErrors.userEmail && (
+                <div className="text-red-600 text-sm mt-1">{addUserFieldErrors.userEmail[0]}</div>
+              )}
+            </div>
+            {addUserOpen && (
+              <>
+                <div>
+                  <input
+                    name="userPassword"
+                    value={addUserForm.userPassword}
+                    onChange={handleAddUserInputChange}
+                    placeholder="Password"
+                    type="password"
+                    className={`outline-none border px-3 py-2 rounded w-full ${addUserFieldErrors.userPassword ? 'border-red-500' : ''}`}
+                    required
+                  />
+                  {addUserFieldErrors.userPassword && (
+                    <div className="text-red-600 text-sm mt-1">{addUserFieldErrors.userPassword[0]}</div>
+                  )}
+                </div>
+                <div>
+                  <input
+                    name="userPassword_confirmation"
+                    value={addUserForm.userPassword_confirmation}
+                    onChange={handleAddUserInputChange}
+                    placeholder="Confirm Password"
+                    type="password"
+                    className={`outline-none border px-3 py-2 rounded w-full ${addUserFieldErrors.userPassword_confirmation ? 'border-red-500' : ''}`}
+                    required
+                  />
+                  {addUserFieldErrors.userPassword_confirmation && (
+                    <div className="text-red-600 text-sm mt-1">{addUserFieldErrors.userPassword_confirmation[0]}</div>
+                  )}
+                </div>
+              </>
             )}
-          </div>
-          <div className="flex justify-center gap-2 sm:col-span-2">
-            <button
-              type="button"
-              onClick={() => {
-                setAddUserOpen(false);
-                setEditUserOpen(false);
-                setEditUserData(null);
-              }}
-              className="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400"
-            >
-              Cancel
-            </button>
-            <button
-              type="submit"
-              className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700"
-              disabled={addUserLoading}
-            >
-              {addUserLoading ? 'Saving...' : (editUserData ? 'Update' : 'Add')}
+            <div className="sm:col-span-2">
+              <select
+                name="roleId"
+                value={addUserForm.roleId}
+                onChange={handleAddUserInputChange}
+                className={`outline-none border px-3 py-2 rounded w-full ${addUserFieldErrors.roleId ? 'border-red-500' : ''}`}
+                required
+              >
+                <option value="">Select Role</option>
+                {rolesForUserLoading ? (
+                  <option disabled>Loading...</option>
+                ) : (
+                  rolesForUser.map(role => (
+                    <option key={role.role_Id} value={role.role_Id}>
+                      {role.role_Name}
+                    </option>
+                  ))
+                )}
+              </select>
+              {addUserFieldErrors.roleId && (
+                <div className="text-red-600 text-sm mt-1">{addUserFieldErrors.roleId[0]}</div>
+              )}
+            </div>
+            <div className="flex justify-center gap-2 sm:col-span-2">
+              <button
+                type="button"
+                onClick={() => {
+                  setAddUserOpen(false);
+                  setEditUserOpen(false);
+                  setEditUserData(null);
+                }}
+                className="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400"
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700"
+                disabled={addUserLoading}
+              >
+                {addUserLoading ? 'Saving...' : (editUserData ? 'Update' : 'Add')}
 
-            </button>
-          </div>
-        </form>
+              </button>
+            </div>
+          </form>
       </Modal>
 
       {usersLoading ? (
@@ -576,6 +466,28 @@ export default function User() {
           </table>
         </div>
       )}
+
+      {/* show default pwd */}
+      <Modal
+        isOpen={defaultPwdModalOpen}
+        onClose={() => setDefaultPwdModalOpen(false)}
+        title="Default Password"
+      >
+        <div className="text-center">
+          <div className='flex justify-between items-center'>
+            <p className="text-lg font-semibold text-gray-700">User's Default Password is:</p>
+            <p className="mt-2 px-4 py-2 bg-gray-100 border rounded text-blue-700 font-bold">
+              {defaultPwd}
+            </p>
+          </div>
+          <button
+            onClick={() => setDefaultPwdModalOpen(false)}
+            className="mt-4 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+          >
+            Close
+          </button>
+        </div>
+      </Modal>
 
 
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 pt-5 flex-wrap">

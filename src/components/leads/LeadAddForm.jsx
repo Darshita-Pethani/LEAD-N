@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import config from '../config';
+import config from '../../config';
 import { toast } from "react-toastify";
 const API_KEY = import.meta.env.VITE_GOOGLE_CODE_API_KEY;
 

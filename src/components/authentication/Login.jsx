@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import api from '../api/api';
-import config from '../config';
+import api from '../../api/api';
+import config from "../../config";
 import { useNavigate } from 'react-router-dom';
 import { toast } from "react-toastify";
 
