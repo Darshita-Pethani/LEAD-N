@@ -173,6 +173,9 @@ export default function User() {
         setAddUserOpen(false);
         fetchUsers();
       } else {
+        if (res.data.errors) {
+        setAddUserFieldErrors(res.data.errors);
+      }
         toast.error('Failed to save user');
       }
     } catch (e) {
@@ -497,9 +500,9 @@ export default function User() {
                   hover:bg-blue-50`}
                 >
                   <td className="px-5 py-4 text-gray-800">{user.index}</td>
-                  <td className="px-5 py-4 text-gray-700">{user.user_Name}</td>
-                  <td className="px-5 py-4 text-gray-700">{user.user_Email}</td>
-                  <td className="px-5 py-4 text-gray-700">{user.role_Name}</td>
+                  <td className="px-5 py-4 text-gray-700 whitespace-normal break-words">{user.user_Name}</td>
+                  <td className="px-5 py-4 text-gray-700 whitespace-normal break-words">{user.user_Email}</td>
+                  <td className="px-5 py-4 text-gray-700 whitespace-normal break-words">{user.role_Name}</td>
                   <td className="px-5 py-4 text-gray-800 flex items-center gap-2">
                     <div className="relative group">
 

@@ -124,7 +124,7 @@ export default function LeadsTable() {
 
   // Handler for add error
   const handleAddError = (msg) => {
-    toast.error(msg || 'Failed to add lead');
+    toast.error(msg || '');
   };
 
   // Fetch lead detail by id (use new filter format)
@@ -163,8 +163,8 @@ export default function LeadsTable() {
           }
         }
       );
-      if (response.status == 'success') {
-        toast.success(res.data.msg || 'Staus updated successfully');
+      if (response.data.status == 'success') {
+        toast.success('Status updated successfully');
         await fetchLeadDetail(leadId);
         setShowLeadModal(false)
         fetchLeads();
@@ -379,15 +379,17 @@ export default function LeadsTable() {
                     }}
                   >
                     <td className="px-5 py-4 text-gray-800">{lead.index}</td>
-                    <td className="px-5 py-4 text-gray-700 whitespace-normal break-words max-w-xs">
-                      {lead.lead_Title}</td>
-                    <td className="px-5 py-4 text-gray-700 whitespace-normal break-words max-w-xs">
+                    <td className="px-5 py-4 text-gray-700 whitespace-normal max-w-xs truncate" title={lead.lead_Title}>
+                      {lead.lead_Title}
+                    </td>
+
+                    <td className="px-5 py-4 text-gray-700 whitespace-normal max-w-xs truncate" title={lead.lead_Description}>
                       {lead.lead_Description}</td>
-                    <td className="px-5 py-4 text-gray-700 whitespace-normal break-words max-w-xs">
+                    <td className="px-5 py-4 text-gray-700 whitespace-normal truncate max-w-xs" title={lead.lead_Source}>
                       {lead.lead_Source}</td>
-                    <td className="px-5 py-4 text-gray-700 whitespace-normal break-words max-w-xs">
+                    <td className="px-5 py-4 text-gray-700 whitespace-normal truncate max-w-xs" title={lead.lead_Contact_Name}>
                       {lead.lead_Contact_Name}</td>
-                    <td className="px-5 py-4 text-gray-700 whitespace-normal break-words max-w-xs">
+                    <td className="px-5 py-4 text-gray-700 whitespace-normal truncate max-w-xs" title={lead.lead_Contact_Email}>
                       {lead.lead_Contact_Email}</td>
                     <td className="px-5 py-4 text-gray-700">{lead.lead_Status}</td>
                     <td className="px-5 py-4 text-gray-700">{moment(lead.created_at).format('DD-MM-YYYY')}</td>
@@ -574,11 +576,21 @@ export default function LeadsTable() {
                     <span className="text-sm text-gray-500 font-medium">
                       {key.replace(/_/g, " ")}
                     </span>
-                    <span className="text-gray-900 font-semibold break-words">
-                      {String(value)}
-                    </span>
+
+                    {["lead_Title", "lead_Description", "lead_Note", "lead_Source", "lead_Address_House","lead Address Street"].includes(key) ? (
+                      <div className="mt-1 max-h-24 overflow-y-auto p-2 border rounded bg-gray-50 text-sm text-gray-800 whitespace-pre-wrap break-words">
+                        {String(value)}
+                      </div>
+
+                    ) : (
+                      <span className="text-gray-900 font-semibold break-words">
+                        {String(value)}
+                      </span>
+                    )}
+
                   </div>
                 ))}
+
             </div>
           </div>
         ) : (

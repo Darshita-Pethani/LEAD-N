@@ -132,7 +132,7 @@ export default function LeadAddForm({ onSuccess, onError, onCancel, editLeadData
       }
 
       if (res.data.status === 'success') {
-        if (onSuccess) onSuccess(editLeadData != '' ? "update" : "add");
+        if (onSuccess) onSuccess(editLeadData != '' ? "updated" : "add");
         // Clear form only if adding new lead
         if (!editLeadData) {
           setForm({
@@ -370,6 +370,9 @@ export default function LeadAddForm({ onSuccess, onError, onCancel, editLeadData
             onChange={(e) => setSearchTerm(e.target.value)}
             className="outline-none w-full px-4 py-2 border border-gray-300 rounded-md"
           />
+          {fieldErrors.lead_Assigned_To && (
+            <div className="text-red-600 text-sm mt-1">{fieldErrors.lead_Assigned_To[0]}</div>
+          )}
           {showDropdown && (
             <ul className="absolute w-full z-10 max-h-48 overflow-y-auto bg-white border border-gray-300 rounded-md shadow-lg">
               {filteredAgents.length > 0 ? (
