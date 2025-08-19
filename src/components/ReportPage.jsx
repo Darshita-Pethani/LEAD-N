@@ -9,17 +9,20 @@ export default function SalesLeadReport() {
     const [totalPages, setTotalPages] = useState(1);
     const [page, setPage] = useState(1);
     const [limit, setLimit] = useState(10);
+    const token = localStorage.getItem("token");
 
     const fetchReport = async () => {
         setLoading(true);
         try {
-            const res = await axios.post(`${config.API_BASE_URL}/sales/report`, { inputData: { page, limit } }
-            );
+            const res = await axios.post(`${config.API_BASE_URL}/sales/report`, { inputData: { page, limit } }, {
+                headers: {
+                    Authorization: token,
+                },
+            });
             if (res.data.status === 'success') {
                 setReportData(res.data.data.agents);
                 setOverallData(res.data.data.overall);
-                setTotalPages(res.data.pagination.totalPages);
-
+                setTotalPages(res.data.data.pagination.totalPages);
             }
         } catch (e) {
             console.log('e: ', e);
@@ -29,7 +32,7 @@ export default function SalesLeadReport() {
 
     useEffect(() => {
         fetchReport();
-    }, []);
+    }, [limit, page]);
 
     return (
         <div className="p-6">
@@ -143,7 +146,7 @@ export default function SalesLeadReport() {
 
                                 {/* Next */}
                                 <button
-                                    disabled={page === totalPages}
+                                    disabled={page == totalPages}
                                     onClick={() => setPage(prev => prev + 1)}
                                     className="px-3 py-2 bg-gray-200 rounded disabled:opacity-50 font-semibold shadow transition"
                                 >
@@ -152,7 +155,7 @@ export default function SalesLeadReport() {
 
                                 {/* Last Page */}
                                 <button
-                                    disabled={page === totalPages}
+                                    disabled={page == totalPages}
                                     onClick={() => setPage(totalPages)}
                                     className="px-3 py-2 bg-gray-200 rounded disabled:opacity-50 font-semibold shadow transition"
                                 >

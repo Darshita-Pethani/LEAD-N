@@ -49,6 +49,7 @@ export default function LeadsTable() {
   const [leadDetail, setLeadDetail] = useState(null);
   const [leadDetailLoading, setLeadDetailLoading] = useState(false);
   const [editLeadData, setEditLeadData] = useState([]);
+  const token = localStorage.getItem("token");
 
   const fetchLeads = async () => {
     setLoading(true);
@@ -64,6 +65,11 @@ export default function LeadsTable() {
               limit
             }
           }
+        },
+        {
+          headers: {
+            Authorization: token,
+          },
         }
       );
       if (res.data.status === 'success') {
@@ -136,6 +142,11 @@ export default function LeadsTable() {
         `${config.API_BASE_URL}/sales/sales-lead/id`,
         {
           inputData: { lead_Id: leadId }
+        },
+        {
+          headers: {
+            Authorization: token,
+          },
         }
       );
       if (res.data.status === 'success' && Array.isArray(res.data.data) && res.data.data.length > 0) {
@@ -160,6 +171,11 @@ export default function LeadsTable() {
             lead_Id: leadId,
             lead_Status: newStatus
 
+          }
+        },
+        {
+          headers: {
+            Authorization: token,
           }
         }
       );
@@ -577,7 +593,7 @@ export default function LeadsTable() {
                       {key.replace(/_/g, " ")}
                     </span>
 
-                    {["lead_Title", "lead_Description", "lead_Note", "lead_Source", "lead_Address_House","lead Address Street"].includes(key) ? (
+                    {["lead_Title", "lead_Description", "lead_Note", "lead_Source", "lead_Address_House", "lead Address Street"].includes(key) ? (
                       <div className="mt-1 max-h-24 overflow-y-auto p-2 border rounded bg-gray-50 text-sm text-gray-800 whitespace-pre-wrap break-words">
                         {String(value)}
                       </div>

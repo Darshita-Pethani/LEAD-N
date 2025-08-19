@@ -53,13 +53,18 @@ export default function User() {
 
   const [editUserOpen, setEditUserOpen] = useState(false);
   const [editUserData, setEditUserData] = useState(null);
+  const token = localStorage.getItem("token");
 
   const fetchUsers = async () => {
     setUsersLoading(true);
     setUsersError('');
     try {
       const res = await axios.post(`${config.API_BASE_URL}/user/userlist`, {
-        inputData: { filterData: { page, limit } }
+        inputData: { filterData: { page, limit }, }
+      }, {
+        headers: {
+          Authorization: token,
+        },
       });
       if (res.data.status === 'success') {
         setUsers(res.data.data?.length ? res.data.data : DUMMY_USERS);
@@ -79,7 +84,11 @@ export default function User() {
   const fetchRolesForUser = async () => {
     setRolesForUserLoading(true);
     try {
-      const res = await axios.post(`${config.API_BASE_URL}/user/roles`, { inputData: {} });
+      const res = await axios.post(`${config.API_BASE_URL}/user/roles`, { inputData: {} }, {
+        headers: {
+          Authorization: token,
+        },
+      });
       if (res.data.status === 'success') {
         setRolesForUser(res.data.data || []);
       } else {
@@ -156,7 +165,11 @@ export default function User() {
         payload = { inputData: { ...addUserForm, user_Id: editUserData.user_Id } };
       }
 
-      const res = await axios.post(url, payload);
+      const res = await axios.post(url, payload, {
+        headers: {
+          Authorization: token,
+        },
+      });
 
       if (res.data.status === 'success') {
         let msg = editUserData ? 'User updated successfully' : 'User added successfully'
@@ -174,8 +187,8 @@ export default function User() {
         fetchUsers();
       } else {
         if (res.data.errors) {
-        setAddUserFieldErrors(res.data.errors);
-      }
+          setAddUserFieldErrors(res.data.errors);
+        }
         toast.error('Failed to save user');
       }
     } catch (e) {
@@ -191,6 +204,10 @@ export default function User() {
       setEditUserOpen(true);
       const res = await axios.post(`${config.API_BASE_URL}/user/get-user-by-id`, {
         inputData: { userId: user.user_Id }
+      }, {
+        headers: {
+          Authorization: token,
+        },
       });
       if (res.data.status === 'success') {
         let userDetails = res.data.data;
@@ -223,7 +240,11 @@ export default function User() {
     }).then(async (result) => {
       if (result.isConfirmed) {
         try {
-          let res = await axios.post(`${config.API_BASE_URL}/user/delete-user/`, { inputData: { user_Id: itemId } });
+          let res = await axios.post(`${config.API_BASE_URL}/user/delete-user/`, { inputData: { user_Id: itemId } }, {
+            headers: {
+              Authorization: token,
+            },
+          });
           Swal.fire('Deleted!', 'Your item has been deleted.', 'success');
           if (res.data.status === 'success') {
             fetchUsers();

@@ -31,6 +31,7 @@ export default function LeadAddForm({ onSuccess, onError, onCancel, editLeadData
   const [filteredAgents, setFilteredAgents] = useState([]);
   const [showDropdown, setShowDropdown] = useState(false);
   const [agents, setAgents] = useState([]);
+  const token = localStorage.getItem("token");
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -119,6 +120,11 @@ export default function LeadAddForm({ onSuccess, onError, onCancel, editLeadData
               ...form,
               lead_Id: editLeadData.lead_Id,
             }
+          },
+          {
+            headers: {
+              Authorization: token,
+            }
           }
         );
       } else {
@@ -127,6 +133,11 @@ export default function LeadAddForm({ onSuccess, onError, onCancel, editLeadData
           `${config.API_BASE_URL}/sales/create-lead`,
           {
             inputData: { formData: form }
+          },
+          {
+            headers: {
+              Authorization: token,
+            }
           }
         );
       }
@@ -175,7 +186,11 @@ export default function LeadAddForm({ onSuccess, onError, onCancel, editLeadData
 
   const fetchAgents = async () => {
     try {
-      const res = await axios.post(`${config.API_BASE_URL}/user/agent-list`);
+      const res = await axios.post(`${config.API_BASE_URL}/user/agent-list`, {}, {
+        headers: {
+          Authorization: token,
+        }
+      });
       if (res.data.status === 'success' && Array.isArray(res.data.data)) {
         setAgents(res.data.data);
       } else {
