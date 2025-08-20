@@ -498,7 +498,16 @@ export default function User() {
         <div className="w-full sm:w-auto flex justify-center sm:justify-end">
           <select
             value={limit}
-            onChange={e => setLimit(Number(e.target.value))}
+            // onChange={e => setLimit(Number(e.target.value))}
+            onChange={e => {
+              const newLimit = Number(e.target.value);
+              if (page === totalPages) {
+                setLimit(newLimit);
+                setPage(1);
+              } else {
+                setLimit(newLimit);
+              }
+            }}
             className="border px-2 py-2 rounded focus:ring-2 focus:ring-blue-400 transition outline-none w-full sm:w-auto max-w-[150px]"
             title="Rows per page"
             name="items per page"

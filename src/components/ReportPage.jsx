@@ -22,13 +22,23 @@ export default function SalesLeadReport() {
             if (res.data.status === 'success') {
                 setReportData(res.data.data.agents);
                 setOverallData(res.data.data.overall);
-                setTotalPages(res.data.data.pagination.totalPages);
+                if (res.data.data.pagination.totalPages) {
+                    setTotalPages(res.data.data.pagination.totalPages);
+                } else {
+                    setTotalPages((res.data.data && res.data.data.length < limit) ? page : page + 1);
+                }
             }
         } catch (e) {
             console.log('e: ', e);
         }
         setLoading(false);
     };
+
+    useEffect(() => {
+        if (page > totalPages) {
+            setPage(1);
+        }
+    }, [totalPages, page]);
 
     useEffect(() => {
         fetchReport();
