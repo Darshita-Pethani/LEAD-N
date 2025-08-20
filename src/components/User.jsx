@@ -255,8 +255,6 @@ export default function User() {
     }
   }
 
-  console.log(editUserData, "editUserDataeditUserData")
-
   return (
     <div>
       <div className="flex flex-col sm:flex-row justify-between items-center mb-4">
@@ -278,6 +276,12 @@ export default function User() {
         }}
         title={editUserData ? 'Edit User' : 'Add User'}
       >
+        {(rolesForUserLoading || (editUserOpen && !editUserData)) ? (
+          <div className="flex justify-center items-center py-10">
+            <div className="w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+            <span className="ml-3 text-blue-600 font-semibold">Loading...</span>
+          </div>
+        ) : (
           <form onSubmit={handleSaveUser} className="grid gap-4">
             <div>
               <input
@@ -306,6 +310,7 @@ export default function User() {
                 <div className="text-red-600 text-sm mt-1">{addUserFieldErrors.userEmail[0]}</div>
               )}
             </div>
+
             {addUserOpen && (
               <>
                 <div>
@@ -338,6 +343,7 @@ export default function User() {
                 </div>
               </>
             )}
+
             <div className="sm:col-span-2">
               <select
                 name="roleId"
@@ -347,20 +353,17 @@ export default function User() {
                 required
               >
                 <option value="">Select Role</option>
-                {rolesForUserLoading ? (
-                  <option disabled>Loading...</option>
-                ) : (
-                  rolesForUser.map(role => (
-                    <option key={role.role_Id} value={role.role_Id}>
-                      {role.role_Name}
-                    </option>
-                  ))
-                )}
+                {rolesForUser.map(role => (
+                  <option key={role.role_Id} value={role.role_Id}>
+                    {role.role_Name}
+                  </option>
+                ))}
               </select>
               {addUserFieldErrors.roleId && (
                 <div className="text-red-600 text-sm mt-1">{addUserFieldErrors.roleId[0]}</div>
               )}
             </div>
+
             <div className="flex justify-center gap-2 sm:col-span-2">
               <button
                 type="button"
@@ -379,10 +382,10 @@ export default function User() {
                 disabled={addUserLoading}
               >
                 {addUserLoading ? 'Saving...' : (editUserData ? 'Update' : 'Add')}
-
               </button>
             </div>
           </form>
+        )}
       </Modal>
 
       {usersLoading ? (
