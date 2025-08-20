@@ -13,14 +13,14 @@ export default function LeadsDetails({
     const [comment, setComment] = useState("");
 
     const handleSubmit = () => {
-        if (!selectedStatusName) return;
-
-        const selectedStatus = status.find((s) => s.lead_status_Name === selectedStatusName);
+        console.log('selectedStatusName: ', selectedStatusName);
+        const selectedStatus = status.find((s) => s.lead_status_Name === selectedStatusName) || status.find((s) => s.lead_status_Name === leadDetail.lead_Status);
+        console.log('selectedStatus: ', selectedStatus);
 
         handleStatusUpdate(
             leadDetail.lead_Id,
             selectedStatus?.lead_status_Name,
-            selectedStatus.lead_status_Id, 
+            selectedStatus?.lead_status_Id,
             comment
         );
         setComment("");

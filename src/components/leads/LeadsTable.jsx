@@ -5,10 +5,10 @@ import LeadAddForm from './LeadAddForm';
 import moment from 'moment';
 import Modal from "../otherComponents/Model";
 import Swal from 'sweetalert2';
-import { Edit2, Trash2 } from 'lucide-react';
+import { Edit2, Layers, Trash2 } from 'lucide-react';
 import { toast } from "react-toastify";
 import LeadsDetails from './LeadsDetails';
-
+import LeadTracker from "./LeadTracker";
 export default function LeadsTable() {
   const [leads, setLeads] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -20,13 +20,13 @@ export default function LeadsTable() {
   const [showAddForm, setShowAddForm] = useState(false);
   const [showLeadModal, setShowLeadModal] = useState(false);
   const [leadDetail, setLeadDetail] = useState(null);
-  console.log('leadDetail: ', leadDetail);
   const [leadDetailLoading, setLeadDetailLoading] = useState(false);
   const [editLeadData, setEditLeadData] = useState([]);
   const token = localStorage.getItem("token");
   const [statuses, setStatuses] = useState([]);
   const [statusFilter, setStatusFilter] = useState("");
-
+  const [showTrackerModal, setShowTrackerModal] = useState(false);
+  const [trackerData, setTrackerData] = useState([]);
   const fetchLeads = async () => {
     setLoading(true);
     try {
@@ -73,13 +73,10 @@ export default function LeadsTable() {
     setSort(prevSort => {
       const existing = prevSort.find(s => s.field === field);
       if (!existing) {
-        return [{ field, order: 'desc' }];
+        return [{ field, order: 'asc' }];
       }
       if (existing.order === 'desc') {
         return [{ field, order: 'asc' }];
-      }
-      if (existing.order === 'asc') {
-        return [{ field, order: 'desc' }];
       }
       return [{ field, order: 'desc' }];
     });
@@ -122,8 +119,8 @@ export default function LeadsTable() {
           },
         }
       );
-      if (res.data.status === 'success' && Array.isArray(res.data.data) && res.data.data.length > 0) {
-        setLeadDetail(res.data.data[0]);
+      if (res.data.status === 'success') {
+        setLeadDetail(res.data.data);
       } else {
         setLeadDetail({ error: 'Lead not found' });
       }
@@ -134,7 +131,7 @@ export default function LeadsTable() {
   };
 
   // Update lead status
-  const handleStatusUpdate = async (leadId, newStatus, oldStatusId) => {
+  const handleStatusUpdate = async (leadId, newStatus, oldStatusId, comment) => {
     setLeadDetailLoading(true);
     try {
       let response = await axios.post(
@@ -143,7 +140,8 @@ export default function LeadsTable() {
           inputData: {
             lead_Id: leadId,
             lead_Status: newStatus,
-            lead_status_Id: oldStatusId
+            lead_status_Id: oldStatusId,
+            comment: comment
           }
         },
         {
@@ -226,6 +224,17 @@ export default function LeadsTable() {
     }
   }
 
+  const handleOpenTracker = (lead) => {
+    if (lead.tracker && lead.tracker.length > 0) {
+      setTrackerData(lead.tracker);
+      setShowTrackerModal(true);
+    } else {
+      setTrackerData([]);
+      setShowTrackerModal(true);
+    }
+  };
+
+
   const clearFilter = () => {
     setPage(1);
     setStatusFilter("");
@@ -263,11 +272,12 @@ export default function LeadsTable() {
             onChange={e => {
               setStatusFilter(e.target.value);
               setPage(1);
-            }} className="appearance-none border border-gray-300 px-4 py-2 pr-8 rounded-lg shadow-sm text-sm font-medium text-gray-700 
+            }}
+            className="appearance-none border border-gray-300 px-4 py-2 pr-8 rounded-lg shadow-sm text-sm font-medium text-gray-700 
                 outline-none bg-white"
           >
             <option value="">All status</option>
-            {statuses.map(s => (
+            {statuses.length > 0 && statuses.map(s => (
               <option key={s.lead_status_Id} value={s.lead_status_Name}>
                 {s.lead_status_Name}
               </option>
@@ -321,13 +331,16 @@ export default function LeadsTable() {
                 >
                   Status
                 </th>
+                <th className="text-left px-5 py-3 text-sm font-semibold text-blue-700 uppercase tracking-wide cursor-pointer select-none"              >
+                  Tracker
+                </th>
                 <th
                   className="text-left px-5 py-3 text-sm font-semibold text-blue-700 uppercase tracking-wide cursor-pointer select-none"
                   onClick={() => handleSort('created_at')}
                 >
                   Created At {getSortIcon('created_at')}
                 </th>
-                {/* <th className="text-center px-5 py-3 text-sm font-semibold text-blue-700 uppercase tracking-wide">Actions</th> */}
+                <th className="text-center px-5 py-3 text-sm font-semibold text-blue-700 uppercase tracking-wide">Actions</th>
               </tr>
             </thead>
             <tbody className="bg-white">
@@ -365,14 +378,36 @@ export default function LeadsTable() {
                     <td className="px-5 py-4 text-gray-700 whitespace-normal truncate max-w-xs" title={lead.lead_Contact_Email}>
                       {lead.lead_Contact_Email}</td>
                     <td className="px-5 py-4 text-gray-700">{lead.lead_Status}</td>
-                    <td className="px-5 py-4 text-gray-700">{moment(lead.created_at).format('DD-MM-YYYY')}</td>
-
-                    {/* <td className="px-5 py-4 text-gray-800 flex items-center gap-2">
+                    <td className="px-4 py-3">
                       <div className="relative group">
                         <button
                           className="p-2 text-blue-500 hover:bg-blue-100 rounded-full transition"
-                          onClick={e => { e.stopPropagation(); handleEdit(lead); }}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleOpenTracker(lead);
+                          }}
                         >
+                        <Layers size={17}/>
+                        </button>
+                        <span className="absolute bottom-full mb-1 left-1/2 -translate-x-1/2 px-2 py-1 
+                          text-xs text-white bg-gray-800 rounded opacity-0 group-hover:opacity-100 
+                          transition-opacity whitespace-nowrap z-10">
+                          Tracker
+                        </span>
+                      </div>
+
+                    </td>
+                    <td className="px-5 py-4 text-gray-700">{moment(lead.created_at).format('DD-MM-YYYY')}</td>
+
+                    <td className="px-5 py-4 text-gray-800 flex items-center gap-2">
+                      <div className="relative group">
+                        <button
+                          className="p-2 text-blue-500 hover:bg-blue-100 rounded-full transition"
+                          // onClick={e => { e.stopPropagation(); handleEdit(lead); }}
+                          onClick={() => {
+                            setShowLeadModal(true);
+                            fetchLeadDetail(lead.lead_Id);
+                          }}                        >
                           <Edit2 size={17} />
                         </button>
                         <span className="absolute bottom-full mb-1 left-1/2 -translate-x-1/2 px-2 py-1 
@@ -395,7 +430,7 @@ export default function LeadsTable() {
                           Delete
                         </span>
                       </div>
-                    </td> */}
+                    </td>
                   </tr>
                 )) :
                   <tr>
@@ -472,6 +507,18 @@ export default function LeadsTable() {
           </div>
         </div>
       }
+
+      <Modal
+        isOpen={showTrackerModal}
+        onClose={() => setShowTrackerModal(false)}
+        title="Lead Status Tracker"
+      >
+        {trackerData.length > 0 ? (
+          <LeadTracker trackerData={trackerData} />
+        ) : (
+          <p className="text-center text-gray-500">No data available.</p>
+        )}
+      </Modal>
 
       <LeadsDetails
         isOpen={showLeadModal}
