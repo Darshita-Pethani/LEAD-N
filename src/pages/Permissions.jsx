@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import config from "../config";
-import Modal from "./otherComponents/Model";
+import Modal from "../components/Model";
 import Swal from 'sweetalert2';
 import { Edit2, Trash2 } from 'lucide-react';
 import { toast } from "react-toastify";

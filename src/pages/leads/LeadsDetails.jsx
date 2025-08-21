@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import Modal from "../otherComponents/Model";
+import Modal from "../../components/Model";
 
 export default function LeadsDetails({
     isOpen,
@@ -13,9 +13,7 @@ export default function LeadsDetails({
     const [comment, setComment] = useState("");
 
     const handleSubmit = () => {
-        console.log('selectedStatusName: ', selectedStatusName);
         const selectedStatus = status.find((s) => s.lead_status_Name === selectedStatusName) || status.find((s) => s.lead_status_Name === leadDetail.lead_Status);
-        console.log('selectedStatus: ', selectedStatus);
 
         handleStatusUpdate(
             leadDetail.lead_Id,

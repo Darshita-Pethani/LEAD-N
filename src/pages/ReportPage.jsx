@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from 'axios';
 import config from '../config';
+import Pagination from '../components/Pagination';
 
 export default function SalesLeadReport() {
     const [reportData, setReportData] = useState([]);
@@ -110,9 +111,7 @@ export default function SalesLeadReport() {
                                 </tbody>
                             </table>
                         </div>
-                        {/* pagination sec */}
-                        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 pt-5 flex-wrap">
-                            {/* Rows per page */}
+                        {/* <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 pt-5 flex-wrap">
                             <div className="w-full sm:w-auto flex justify-center sm:justify-end">
                                 <select
                                     value={limit}
@@ -129,9 +128,7 @@ export default function SalesLeadReport() {
                                 </select>
                             </div>
 
-                            {/* Pagination */}
                             <div className="w-full sm:w-auto flex flex-wrap items-center gap-2 justify-center sm:justify-end">
-                                {/* First Page */}
                                 <button
                                     disabled={page === 1}
                                     onClick={() => setPage(1)}
@@ -140,7 +137,6 @@ export default function SalesLeadReport() {
                                     ⏮
                                 </button>
 
-                                {/* Prev */}
                                 <button
                                     disabled={page === 1}
                                     onClick={() => setPage(prev => prev - 1)}
@@ -149,12 +145,10 @@ export default function SalesLeadReport() {
                                     ◀
                                 </button>
 
-                                {/* Current page info */}
                                 <span className="px-2 py-2 font-semibold text-blue-700">
                                     Page {page} of {totalPages}
                                 </span>
 
-                                {/* Next */}
                                 <button
                                     disabled={page == totalPages}
                                     onClick={() => setPage(prev => prev + 1)}
@@ -163,7 +157,6 @@ export default function SalesLeadReport() {
                                     ▶
                                 </button>
 
-                                {/* Last Page */}
                                 <button
                                     disabled={page == totalPages}
                                     onClick={() => setPage(totalPages)}
@@ -172,7 +165,14 @@ export default function SalesLeadReport() {
                                     ⏭
                                 </button>
                             </div>
-                        </div>
+                        </div> */}
+                        <Pagination
+                            page={page}
+                            setPage={setPage}
+                            totalPages={totalPages}
+                            limit={limit}
+                            setLimit={setLimit}
+                        />
                     </div>
 
                 </>

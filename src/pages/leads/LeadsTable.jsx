@@ -3,12 +3,15 @@ import axios from 'axios';
 import config from '../../config';
 import LeadAddForm from './LeadAddForm';
 import moment from 'moment';
-import Modal from "../otherComponents/Model";
+import Modal from '../../components/Model';
 import Swal from 'sweetalert2';
 import { Edit2, Layers, Trash2 } from 'lucide-react';
 import { toast } from "react-toastify";
 import LeadsDetails from './LeadsDetails';
 import LeadTracker from "./LeadTracker";
+import Pagination from "../../components/Pagination";
+
+
 export default function LeadsTable() {
   const [leads, setLeads] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -27,6 +30,8 @@ export default function LeadsTable() {
   const [statusFilter, setStatusFilter] = useState("");
   const [showTrackerModal, setShowTrackerModal] = useState(false);
   const [trackerData, setTrackerData] = useState([]);
+
+
   const fetchLeads = async () => {
     setLoading(true);
     try {
@@ -67,6 +72,7 @@ export default function LeadsTable() {
   useEffect(() => {
     fetchLeads();
   }, [search, sort, page, limit, statusFilter]);
+  console.log('page, limit: ', page, limit);
 
   const handleSort = (field) => {
     setPage(1);
@@ -443,13 +449,11 @@ export default function LeadsTable() {
         </div>
       </div>
 
-      {leads.length > 0 &&
+      {/* {leads.length > 0 &&
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 pt-5 flex-wrap">
-          {/* Rows per page */}
           <div className="w-full sm:w-auto flex justify-center sm:justify-end">
             <select
               value={limit}
-              // onChange={e => setLimit(Number(e.target.value))}
               onChange={e => {
                 const newLimit = Number(e.target.value);
                 if (page === totalPages) {
@@ -471,9 +475,7 @@ export default function LeadsTable() {
             </select>
           </div>
 
-          {/* Pagination */}
           <div className="w-full sm:w-auto flex flex-wrap items-center gap-2 justify-center sm:justify-end">
-            {/* First Page */}
             <button
               disabled={page === 1}
               onClick={() => setPage(1)}
@@ -482,7 +484,6 @@ export default function LeadsTable() {
               ⏮
             </button>
 
-            {/* Prev */}
             <button
               disabled={page === 1}
               onClick={() => setPage(prev => prev - 1)}
@@ -491,12 +492,10 @@ export default function LeadsTable() {
               ◀
             </button>
 
-            {/* Current page info */}
             <span className="px-2 py-2 font-semibold text-blue-700">
               Page {page} of {totalPages}
             </span>
 
-            {/* Next */}
             <button
               disabled={page == totalPages}
               onClick={() => setPage(prev => prev + 1)}
@@ -505,7 +504,6 @@ export default function LeadsTable() {
               ▶
             </button>
 
-            {/* Last Page */}
             <button
               disabled={page == totalPages}
               onClick={() => setPage(totalPages)}
@@ -515,7 +513,7 @@ export default function LeadsTable() {
             </button>
           </div>
         </div>
-      }
+      } */}
 
       <Modal
         isOpen={showTrackerModal}
@@ -528,6 +526,14 @@ export default function LeadsTable() {
           <p className="text-center text-gray-500">No data available.</p>
         )}
       </Modal>
+
+      <Pagination
+        page={page}
+        setPage={setPage}
+        totalPages={totalPages}
+        limit={limit}
+        setLimit={setLimit}
+      />
 
       <LeadsDetails
         isOpen={showLeadModal}

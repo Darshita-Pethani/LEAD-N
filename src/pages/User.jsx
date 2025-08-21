@@ -1,34 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import config from '../config';
-import Modal from "./otherComponents/Model";
+import Modal from '../components/Model';
 import Swal from 'sweetalert2';
 import { Edit2, KeyRound, Trash2 } from 'lucide-react';
 import { toast } from "react-toastify";
-
-const DUMMY_USERS = [
-  {
-    user_Id: 1,
-    userName: "Priya Sharma",
-    userEmail: "priya.sharma@email.com",
-    roleId: "Sales Executive",
-    role_Name: "Sales Executive"
-  },
-  {
-    user_Id: 2,
-    userName: "Amit Verma",
-    userEmail: "amit.verma@email.com",
-    roleId: "Manager",
-    role_Name: "Manager"
-  },
-  {
-    user_Id: 3,
-    userName: "Neha Singh",
-    userEmail: "neha.singh@email.com",
-    roleId: "Sales Executive",
-    role_Name: "Sales Executive"
-  }
-];
+import Pagination from '../components/Pagination';
 
 export default function User() {
   const [users, setUsers] = useState([]);
@@ -47,7 +24,6 @@ export default function User() {
   });
 
   const [rolesForUser, setRolesForUser] = useState([]);
-  const [rolesForUserLoading, setRolesForUserLoading] = useState(false);
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [limit, setLimit] = useState(10);
@@ -69,14 +45,14 @@ export default function User() {
         },
       });
       if (res.data.status === 'success') {
-        setUsers(res.data.data?.length ? res.data.data : DUMMY_USERS);
+        setUsers(res.data.data?.length ? res.data.data : []);
         setTotalPages(res.data.totalPages || 1);
       } else {
-        setUsers(DUMMY_USERS);
+        setUsers([]);
         setUsersError('Failed to fetch users');
       }
     } catch (e) {
-      setUsers(DUMMY_USERS);
+      setUsers([]);
       setUsersError('Failed to fetch users');
     }
     setUsersLoading(false);
@@ -84,7 +60,7 @@ export default function User() {
 
 
   const fetchRolesForUser = async () => {
-    setRolesForUserLoading(true);
+    // setRolesForUserLoading(true);
     try {
       const res = await axios.post(`${config.API_BASE_URL}/user/roles`, { inputData: {} }, {
         headers: {
@@ -99,13 +75,16 @@ export default function User() {
     } catch (e) {
       setRolesForUser([]);
     }
-    setRolesForUserLoading(false);
+    // setRolesForUserLoading(false);
   };
 
   useEffect(() => {
     fetchUsers();
   }, [page, limit]);
 
+  useEffect(() => {
+    fetchRolesForUser();
+  }, [])
   const handleAddUserInputChange = (e) => {
     setAddUserForm({ ...addUserForm, [e.target.name]: e.target.value });
     setAddUserFieldErrors({ ...addUserFieldErrors, [e.target.name]: undefined });
@@ -121,7 +100,7 @@ export default function User() {
       userPassword_confirmation: '',
       roleId: ''
     })
-    if (!addUserOpen) fetchRolesForUser();
+    // if (!addUserOpen) fetchRolesForUser();
   };
 
 
@@ -192,7 +171,7 @@ export default function User() {
           userEmail: userDetails.user_Email || '',
           roleId: userDetails.role_Id || ''
         });
-        fetchRolesForUser();
+        // fetchRolesForUser();
       } else {
         alert('Failed to fetch user details');
       }
@@ -276,7 +255,7 @@ export default function User() {
         }}
         title={editUserData ? 'Edit User' : 'Add User'}
       >
-        {(rolesForUserLoading || (editUserOpen && !editUserData)) ? (
+        {((editUserOpen && !editUserData)) ? (
           <div className="flex justify-center items-center py-10">
             <div className="w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
             <span className="ml-3 text-blue-600 font-semibold">Loading...</span>
@@ -493,8 +472,7 @@ export default function User() {
       </Modal>
 
 
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 pt-5 flex-wrap">
-        {/* Rows per page */}
+      {/* <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 pt-5 flex-wrap">
         <div className="w-full sm:w-auto flex justify-center sm:justify-end">
           <select
             value={limit}
@@ -520,9 +498,7 @@ export default function User() {
           </select>
         </div>
 
-        {/* Pagination */}
         <div className="w-full sm:w-auto flex flex-wrap items-center gap-2 justify-center sm:justify-end">
-          {/* First Page */}
           <button
             disabled={page === 1}
             onClick={() => setPage(1)}
@@ -531,7 +507,6 @@ export default function User() {
             ⏮
           </button>
 
-          {/* Prev */}
           <button
             disabled={page === 1}
             onClick={() => setPage(prev => prev - 1)}
@@ -540,12 +515,10 @@ export default function User() {
             ◀
           </button>
 
-          {/* Current page info */}
           <span className="px-2 py-2 font-semibold text-blue-700">
             Page {page} of {totalPages}
           </span>
 
-          {/* Next */}
           <button
             disabled={page == totalPages}
             onClick={() => setPage(prev => prev + 1)}
@@ -554,7 +527,6 @@ export default function User() {
             ▶
           </button>
 
-          {/* Last Page */}
           <button
             disabled={page == totalPages}
             onClick={() => setPage(totalPages)}
@@ -563,7 +535,15 @@ export default function User() {
             ⏭
           </button>
         </div>
-      </div>
+      </div> */}
+
+      <Pagination
+        page={page}
+        setPage={setPage}
+        totalPages={totalPages}
+        limit={limit}
+        setLimit={setLimit}
+      />
     </div>
   );
 }
