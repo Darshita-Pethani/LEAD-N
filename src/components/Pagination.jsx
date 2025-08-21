@@ -3,6 +3,8 @@ import React from "react";
 export default function Pagination({ page, setPage, totalPages, limit, setLimit }) {
     totalPages = Number(totalPages);
     page = Number(page);
+    // console.log('totalPages: ', totalPages);
+    // console.log('page: ', page);
     return (
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 pt-5 flex-wrap">
             {/* Rows per page */}
@@ -11,12 +13,12 @@ export default function Pagination({ page, setPage, totalPages, limit, setLimit 
                     value={limit}
                     onChange={(e) => {
                         const newLimit = Number(e.target.value);
-                        if (page === totalPages) {
-                            setLimit(newLimit);
-                            setPage(1);
-                        } else {
-                            setLimit(newLimit);
-                        }
+                        setLimit(newLimit);
+                        setPage(1);
+                        // if (page === totalPages) {
+                        // } else {
+                        //     setLimit(newLimit);
+                        // }
                     }}
                     className="border px-2 py-2 rounded focus:ring-2 focus:ring-blue-400 transition outline-none w-full sm:w-auto max-w-[150px]"
                     title="Rows per page"
