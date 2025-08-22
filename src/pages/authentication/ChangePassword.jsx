@@ -13,9 +13,13 @@ export default function ChangePassword() {
     const [showConfirm, setShowConfirm] = useState(false);
     const [loading, setLoading] = useState(false);
 
+    const [fieldErrors, setFieldErrors] = useState({});
+
+
+
     // Password rules
     const rules = {
-        minLength: newPassword.length >= 12,
+        minLength: newPassword.length >= 8,
         upper: /[A-Z]/.test(newPassword),
         lower: /[a-z]/.test(newPassword),
         number: /[0-9]/.test(newPassword),
@@ -24,12 +28,6 @@ export default function ChangePassword() {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-
-        if (newPassword !== confirmPassword) {
-            toast.error("New Password and Confirm Password do not match");
-            return;
-        }
-
         setLoading(true);
 
         try {
@@ -56,10 +54,15 @@ export default function ChangePassword() {
                 setOldPassword("");
                 setNewPassword("");
                 setConfirmPassword("");
+                setFieldErrors({});
             }
 
             if (response.data.status === "error") {
-                toast.error(response.data.msg);
+                if (response.data.errors) {
+                    setFieldErrors(response.data.errors);
+                } else {
+                    toast.error(response.data.msg);
+                }
             }
         } catch (error) {
             if (error.response && error.response.data) {
@@ -103,7 +106,6 @@ export default function ChangePassword() {
                             onChange={(e) => setOldPassword(e.target.value)}
                             placeholder="Enter old password"
                             className="w-full border rounded-lg px-4 py-2 pr-10 focus:ring-2 focus:ring-blue-500 outline-none"
-                            required
                         />
                         <button
                             type="button"
@@ -113,6 +115,9 @@ export default function ChangePassword() {
                             {showOld ? <EyeOff size={18} /> : <Eye size={18} />}
                         </button>
                     </div>
+                    {fieldErrors.oldPassword && (
+                        <div className="text-red-600 text-sm mt-1">{fieldErrors.oldPassword}</div>
+                    )}
                 </div>
 
                 {/* New Password */}
@@ -130,7 +135,6 @@ export default function ChangePassword() {
                                 ? "border-red-400 focus:ring-red-500"
                                 : "focus:ring-blue-500"
                                 }`}
-                            required
                         />
                         <button
                             type="button"
@@ -140,14 +144,18 @@ export default function ChangePassword() {
                             {showNew ? <EyeOff size={18} /> : <Eye size={18} />}
                         </button>
                     </div>
+                    {fieldErrors.newPassword && (
+                        <div className="text-red-600 text-sm mt-1">{fieldErrors.newPassword}</div>
+                    )}
                     <div className="mt-2 space-y-1">
-                        {renderRule(rules.minLength, "Minimum 12 characters")}
+                        {renderRule(rules.minLength, "Minimum 8 characters")}
                         {renderRule(rules.upper, "One uppercase character")}
                         {renderRule(rules.lower, "One lowercase character")}
                         {renderRule(rules.number, "One number")}
                         {renderRule(rules.special, "One special character")}
                     </div>
                 </div>
+
 
                 {/* Confirm Password */}
                 <div className="mb-6">
@@ -161,7 +169,6 @@ export default function ChangePassword() {
                             onChange={(e) => setConfirmPassword(e.target.value)}
                             placeholder="Confirm new password"
                             className="w-full border rounded-lg px-4 py-2 pr-10 focus:ring-2 focus:ring-blue-500 outline-none"
-                            required
                         />
                         <button
                             type="button"
@@ -171,6 +178,9 @@ export default function ChangePassword() {
                             {showConfirm ? <EyeOff size={18} /> : <Eye size={18} />}
                         </button>
                     </div>
+                    {fieldErrors.confirmNewPassword && (
+                        <div className="text-red-600 text-sm mt-1">{fieldErrors.confirmNewPassword}</div>
+                    )}
                 </div>
 
                 <div className="flex justify-end">

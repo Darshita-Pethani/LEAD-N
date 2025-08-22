@@ -12,6 +12,7 @@ import SalesLeadReport from './pages/ReportPage';
 import Customers from './pages/Customer';
 import { GlobalToastContainer } from './components/toastContainer';
 import ChangePassword from './pages/authentication/ChangePassword';
+import UserAssignList from './pages/UserAssignList';
 
 export default function App() {
   return (
@@ -33,6 +34,7 @@ export default function App() {
             <Route path="permissions" element={<Permissions />} />
             <Route path="report" element={<SalesLeadReport />} />
             <Route path="customer" element={<Customers />} />
+            <Route path="assige-list" element={<UserAssignList />} />
           </Route>
         </Route>
       </Routes>

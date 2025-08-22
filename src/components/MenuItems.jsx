@@ -52,4 +52,10 @@ export const MenuItems = [
         key: "reports",
         path: "/report",
     },
+    // {
+    //     label: "Assigee",
+    //     icon: Users,
+    //     key: "assige-list",
+    //     path: "/assige-list",
+    // },
 ];

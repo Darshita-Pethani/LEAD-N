@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Modal from "../../components/Model";
 
 export default function LeadsDetails({
@@ -11,6 +11,7 @@ export default function LeadsDetails({
 }) {
     const [selectedStatusName, setSelectedStatusName] = useState("");
     const [comment, setComment] = useState("");
+    const [commentError, setCommentError] = useState("");
 
     const handleSubmit = () => {
         const selectedStatus = status.find((s) => s.lead_status_Name === selectedStatusName) || status.find((s) => s.lead_status_Name === leadDetail.lead_Status);
@@ -23,6 +24,27 @@ export default function LeadsDetails({
         );
         setComment("");
     };
+
+
+    const handleCommentChange = (e) => {
+        const value = e.target.value;
+        if (value.length > 500) {
+            setCommentError("You have reached the 500 character limit");
+            return;
+        } else {
+            setCommentError("");
+        }
+        setComment(value);
+    };
+
+
+    useEffect(() => {
+        if (!isOpen) {
+            setComment("");
+            setSelectedStatusName("");
+            setCommentError("");
+        }
+    }, [isOpen]);
 
     return (
         <Modal isOpen={isOpen} onClose={onClose} title="Lead Details">
@@ -56,10 +78,19 @@ export default function LeadsDetails({
                             className="border border-blue-300 rounded px-3 py-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-400"
                             rows="3"
                             value={comment}
-                            onChange={(e) => setComment(e.target.value)}
+                            onChange={handleCommentChange}
                             placeholder="Enter comment about this status change..."
+                        // maxLength={500}
                         />
 
+                        <div className="flex justify-between items-center mt-1">
+                            <div className="text-xs text-gray-500">
+                                {comment.length}/500 characters
+                            </div>
+                            {commentError && (
+                                <div className="text-xs text-red-600">{commentError}</div>
+                            )}
+                        </div>
                         {/* Submit Button */}
                         <button
                             onClick={handleSubmit}
@@ -73,17 +104,26 @@ export default function LeadsDetails({
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4">
                         {Object.entries(leadDetail)
                             .filter(([key]) => key !== "lead_Status")
-                            .map(([key, value]) => (
-                                <div key={key} className="flex flex-col border-b pb-2">
-                                    <span className="text-sm text-gray-500 font-medium">
-                                        {key.replace(/_/g, " ")}
-                                    </span>
-                                    <span className="text-gray-900 font-semibold break-words">
-                                        {String(value)}
-                                    </span>
-                                </div>
-                            ))}
+                            .map(([key, value]) => {
+                                const scrollableKeys = ["lead_Title", "lead_Description", "lead_Source"];
+                                const isScrollable = scrollableKeys.includes(key);
+
+                                return (
+                                    <div key={key} className="flex flex-col border-b pb-2">
+                                        <span className="text-sm text-gray-500 font-medium">
+                                            {key.replace(/_/g, " ")}
+                                        </span>
+                                        <span
+                                            className={`text-gray-900 font-semibold break-words ${isScrollable ? "max-h-24 overflow-y-auto pr-1" : ""
+                                                }`}
+                                        >
+                                            {value && value.toString().trim() !== "" ? value : "N/A"}
+                                        </span>
+                                    </div>
+                                );
+                            })}
                     </div>
+
                 </div>
             ) : (
                 <div className="text-red-600 py-8 text-center font-medium">

@@ -25,6 +25,7 @@ export default function LeadsTable() {
   const [leadDetail, setLeadDetail] = useState(null);
   const [leadDetailLoading, setLeadDetailLoading] = useState(false);
   const [editLeadData, setEditLeadData] = useState([]);
+  console.log('editLeadData: ', editLeadData);
   const token = localStorage.getItem("token");
   const [statuses, setStatuses] = useState([]);
   const [statusFilter, setStatusFilter] = useState("");
@@ -72,7 +73,6 @@ export default function LeadsTable() {
   useEffect(() => {
     fetchLeads();
   }, [search, sort, page, limit, statusFilter]);
-  console.log('page, limit: ', page, limit);
 
   const handleSort = (field) => {
     setPage(1);
@@ -174,7 +174,12 @@ export default function LeadsTable() {
   const handleEdit = async (lead) => {
     const res = await axios.post(`${config.API_BASE_URL}/sales/sales-lead/id`, {
       inputData: { lead_Id: lead.lead_Id }
-    });
+    },
+      {
+        headers: {
+          Authorization: token,
+        }
+      });
     if (res.data.status === 'success' && Array.isArray(res.data.data) && res.data.data.length > 0) {
       setEditLeadData(res.data.data[0]);
       setShowAddForm(true);
@@ -194,7 +199,11 @@ export default function LeadsTable() {
     }).then(async (result) => {
       if (result.isConfirmed) {
         try {
-          let res = await axios.post(`${config.API_BASE_URL}/sales/delete`, { inputData: { lead_Id: item } });
+          let res = await axios.post(`${config.API_BASE_URL}/sales/delete`, { inputData: { lead_Id: item } }, {
+            headers: {
+              Authorization: token,
+            }
+          });
           // Swal.fire('Deleted!', 'Your item has been deleted.', 'success');
           toast.success(res.data.msg || 'Lead deleted successfully');
           if (res.data.status === 'success') {
@@ -307,7 +316,10 @@ export default function LeadsTable() {
       {/* Add Lead Form Modal */}
       <Modal
         isOpen={showAddForm}
-        onClose={() => setShowAddForm(false)}
+        onClose={() => {
+          setShowAddForm(false);
+          setEditLeadData([]);
+        }}
         title={editLeadData != '' ? "Update Lead" : "Add Lead"}
       >
         <LeadAddForm

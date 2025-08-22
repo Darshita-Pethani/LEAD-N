@@ -24,6 +24,7 @@ export default function LeadAddForm({ onSuccess, onError, onCancel, editLeadData
     lead_Note: ''
   });
   const [loading, setLoading] = useState(false);
+  const [agentLoading, setAgentLoading] = useState(false);
   const [fieldErrors, setFieldErrors] = useState({});
   const [geoLoading, setGeoLoading] = useState(false);
   const [geoError, setGeoError] = useState('');
@@ -185,14 +186,16 @@ export default function LeadAddForm({ onSuccess, onError, onCancel, editLeadData
   };
 
   const fetchAgents = async () => {
+    setAgentLoading(true);
     try {
-      const res = await axios.post(`${config.API_BASE_URL}/user/agent-list`, {}, {
+      const res = await axios.post(`${config.API_BASE_URL}/user/agent-list`, { inputData: {} }, {
         headers: {
           Authorization: token,
         }
       });
       if (res.data.status === 'success' && Array.isArray(res.data.data)) {
         setAgents(res.data.data);
+        setAgentLoading(false);
       } else {
         setAgents([]);
       }
@@ -258,15 +261,10 @@ export default function LeadAddForm({ onSuccess, onError, onCancel, editLeadData
 
 
   useEffect(() => {
-    if (searchTerm.trim() !== '') {
-      const filtered = agents.filter(agent =>
-        agent.user_Name.toLowerCase().includes(searchTerm.toLowerCase())
-      );
-      setFilteredAgents(filtered);
-      setShowDropdown(true);
-    } else {
-      setShowDropdown(false);
-    }
+    const filteredAgents = searchTerm.trim() === "" ? agents : agents.filter((agent) =>
+      agent.user_Name.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+    setFilteredAgents(filteredAgents);
   }, [searchTerm, agents]);
 
   const handleSelect = (agent) => {
@@ -293,7 +291,7 @@ export default function LeadAddForm({ onSuccess, onError, onCancel, editLeadData
             className={`outline-none border px-3 py-2 rounded w-full${fieldErrors.lead_Title ? ' border-red-500' : ''}`}
           />
           {fieldErrors.lead_Title && (
-            <div className="text-red-600 text-sm mt-1">{fieldErrors.lead_Title[0]}</div>
+            <div className="text-red-600 text-sm mt-1">{fieldErrors.lead_Title}</div>
           )}
         </div>
         <div>
@@ -305,7 +303,7 @@ export default function LeadAddForm({ onSuccess, onError, onCancel, editLeadData
             className={`outline-none border px-3 py-2 rounded w-full${fieldErrors.lead_Description ? ' border-red-500' : ''}`}
           />
           {fieldErrors.lead_Description && (
-            <div className="text-red-600 text-sm mt-1">{fieldErrors.lead_Description[0]}</div>
+            <div className="text-red-600 text-sm mt-1">{fieldErrors.lead_Description}</div>
           )}
         </div>
         <div>
@@ -317,7 +315,7 @@ export default function LeadAddForm({ onSuccess, onError, onCancel, editLeadData
             className={`outline-none border px-3 py-2 rounded w-full${fieldErrors.lead_Source ? ' border-red-500' : ''}`}
           />
           {fieldErrors.lead_Source && (
-            <div className="text-red-600 text-sm mt-1">{fieldErrors.lead_Source[0]}</div>
+            <div className="text-red-600 text-sm mt-1">{fieldErrors.lead_Source}</div>
           )}
         </div>
         <div>
@@ -329,7 +327,7 @@ export default function LeadAddForm({ onSuccess, onError, onCancel, editLeadData
             className={`outline-none border px-3 py-2 rounded w-full${fieldErrors.lead_Contact_Name ? ' border-red-500' : ''}`}
           />
           {fieldErrors.lead_Contact_Name && (
-            <div className="text-red-600 text-sm mt-1">{fieldErrors.lead_Contact_Name[0]}</div>
+            <div className="text-red-600 text-sm mt-1">{fieldErrors.lead_Contact_Name}</div>
           )}
         </div>
         <div>
@@ -342,7 +340,7 @@ export default function LeadAddForm({ onSuccess, onError, onCancel, editLeadData
             className={`outline-none border px-3 py-2 rounded w-full${fieldErrors.lead_Contact_Email ? ' border-red-500' : ''}`}
           />
           {fieldErrors.lead_Contact_Email && (
-            <div className="text-red-600 text-sm mt-1">{fieldErrors.lead_Contact_Email[0]}</div>
+            <div className="text-red-600 text-sm mt-1">{fieldErrors.lead_Contact_Email}</div>
           )}
         </div>
         <div>
@@ -352,10 +350,11 @@ export default function LeadAddForm({ onSuccess, onError, onCancel, editLeadData
             onChange={handleChange}
             placeholder="Contact Number"
             type="tel"
+            maxLength={15}
             className={`outline-none border px-3 py-2 rounded w-full${fieldErrors['lead_Contact_Phone'] ? ' border-red-500' : ''}`}
           />
           {fieldErrors['lead_Contact_Phone'] && (
-            <div className="text-red-600 text-sm mt-1">{fieldErrors['lead_Contact_Phone'][0]}</div>
+            <div className="text-red-600 text-sm mt-1">{fieldErrors['lead_Contact_Phone']}</div>
           )}
         </div>
 
@@ -372,7 +371,7 @@ export default function LeadAddForm({ onSuccess, onError, onCancel, editLeadData
             <option value="Completed">Completed</option>
           </select>
           {fieldErrors.lead_Status && (
-            <div className="text-red-600 text-sm mt-1">{fieldErrors.lead_Status[0]}</div>
+            <div className="text-red-600 text-sm mt-1">{fieldErrors.lead_Status}</div>
           )}
         </div>
         {/* agent dropdown */}
@@ -380,13 +379,19 @@ export default function LeadAddForm({ onSuccess, onError, onCancel, editLeadData
           <input
             type="text"
             name="Search agent"
-            placeholder="Search agent..."
+            // placeholder="Search agent..."
+            placeholder={
+              agentLoading ? "Loading agents..." : agents.length === 0 ? "No agents available" : "Select an agent..."
+            }
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
+            onFocus={() => setShowDropdown(true)}
+            onBlur={() => setTimeout(() => setShowDropdown(false), 150)}
             className="outline-none w-full px-4 py-2 border border-gray-300 rounded-md"
+            disabled={agentLoading && true}
           />
           {fieldErrors.lead_Assigned_To && (
-            <div className="text-red-600 text-sm mt-1">{fieldErrors.lead_Assigned_To[0]}</div>
+            <div className="text-red-600 text-sm mt-1">{fieldErrors.lead_Assigned_To}</div>
           )}
           {showDropdown && (
             <ul className="absolute w-full z-10 max-h-48 overflow-y-auto bg-white border border-gray-300 rounded-md shadow-lg">
@@ -424,7 +429,7 @@ export default function LeadAddForm({ onSuccess, onError, onCancel, editLeadData
             className={`outline-none border px-3 py-2 rounded w-full${fieldErrors.lead_Address_House ? ' border-red-500' : ''}`}
           />
           {fieldErrors.lead_Address_House && (
-            <div className="text-red-600 text-sm mt-1">{fieldErrors.lead_Address_House[0]}</div>
+            <div className="text-red-600 text-sm mt-1">{fieldErrors.lead_Address_House}</div>
           )}
         </div>
         <div>
@@ -436,7 +441,7 @@ export default function LeadAddForm({ onSuccess, onError, onCancel, editLeadData
             className={`outline-none border px-3 py-2 rounded w-full${fieldErrors.lead_Address_Street ? ' border-red-500' : ''}`}
           />
           {fieldErrors.lead_Address_Street && (
-            <div className="text-red-600 text-sm mt-1">{fieldErrors.lead_Address_Street[0]}</div>
+            <div className="text-red-600 text-sm mt-1">{fieldErrors.lead_Address_Street}</div>
           )}
         </div>
         <div>
@@ -448,7 +453,7 @@ export default function LeadAddForm({ onSuccess, onError, onCancel, editLeadData
             className={`outline-none border px-3 py-2 rounded w-full${fieldErrors.lead_Address_City ? ' border-red-500' : ''}`}
           />
           {fieldErrors.lead_Address_City && (
-            <div className="text-red-600 text-sm mt-1">{fieldErrors.lead_Address_City[0]}</div>
+            <div className="text-red-600 text-sm mt-1">{fieldErrors.lead_Address_City}</div>
           )}
         </div>
         <div>
@@ -457,10 +462,11 @@ export default function LeadAddForm({ onSuccess, onError, onCancel, editLeadData
             value={form.lead_Address_Postcode}
             onChange={handleChange}
             placeholder="Postcode"
+            maxLength={5}
             className={`outline-none border px-3 py-2 rounded w-full${fieldErrors.lead_Address_Postcode ? ' border-red-500' : ''}`}
           />
           {fieldErrors.lead_Address_Postcode && (
-            <div className="text-red-600 text-sm mt-1">{fieldErrors.lead_Address_Postcode[0]}</div>
+            <div className="text-red-600 text-sm mt-1">{fieldErrors.lead_Address_Postcode}</div>
           )}
         </div>
         <div>
@@ -472,7 +478,7 @@ export default function LeadAddForm({ onSuccess, onError, onCancel, editLeadData
             className={`outline-none border px-3 py-2 rounded w-full${fieldErrors.lead_Address_Country ? ' border-red-500' : ''}`}
           />
           {fieldErrors.lead_Address_Country && (
-            <div className="text-red-600 text-sm mt-1">{fieldErrors.lead_Address_Country[0]}</div>
+            <div className="text-red-600 text-sm mt-1">{fieldErrors.lead_Address_Country}</div>
           )}
         </div>
         <div>
@@ -495,7 +501,7 @@ export default function LeadAddForm({ onSuccess, onError, onCancel, editLeadData
             className={`outline-none border px-3 py-2 rounded w-full bg-gray-100${fieldErrors.lead_Address_Latitude ? ' border-red-500' : ''}`}
           />
           {fieldErrors.lead_Address_Latitude && (
-            <div className="text-red-600 text-sm mt-1">{fieldErrors.lead_Address_Latitude[0]}</div>
+            <div className="text-red-600 text-sm mt-1">{fieldErrors.lead_Address_Latitude}</div>
           )}
         </div>
         <div>
@@ -507,7 +513,7 @@ export default function LeadAddForm({ onSuccess, onError, onCancel, editLeadData
             className={`outline-none border px-3 py-2 rounded w-full bg-gray-100${fieldErrors.lead_Address_Longitude ? ' border-red-500' : ''}`}
           />
           {fieldErrors.lead_Address_Longitude && (
-            <div className="text-red-600 text-sm mt-1">{fieldErrors.lead_Address_Longitude[0]}</div>
+            <div className="text-red-600 text-sm mt-1">{fieldErrors.lead_Address_Longitude}</div>
           )}
         </div>
         <div className="md:col-span-2">

@@ -11,10 +11,12 @@ export default function User() {
   const [users, setUsers] = useState([]);
   const [usersLoading, setUsersLoading] = useState(false);
   const [usersError, setUsersError] = useState('');
+  console.log('usersError: ', usersError);
   const [addUserOpen, setAddUserOpen] = useState(false);
   const [defaultPwd, setDefaultPwd] = useState(false);
   const [addUserLoading, setAddUserLoading] = useState(false);
   const [addUserFieldErrors, setAddUserFieldErrors] = useState({});
+  console.log('addUserFieldErrors: ', addUserFieldErrors);
   const [addUserForm, setAddUserForm] = useState({
     userName: '',
     userEmail: '',
@@ -155,7 +157,7 @@ export default function User() {
   const handleEditUser = async (user) => {
     try {
       setEditUserOpen(true);
-      const res = await axios.post(`${config.API_BASE_URL}/user/get-user-by-id`, {
+      const res = await axios.post(`${config.API_BASE_URL}/user/admin/get-user-by-id`, {
         inputData: { userId: user.user_Id }
       }, {
         headers: {
@@ -163,8 +165,8 @@ export default function User() {
         },
       });
       if (res.data.status === 'success') {
-        let userDetails = res.data.data;
-        userDetails = userDetails[0];
+        let userDetails = res.data.data[0];
+        userDetails = userDetails;
         setEditUserData(userDetails);
         setAddUserForm({
           userName: userDetails.user_Name || '',
@@ -252,6 +254,14 @@ export default function User() {
           setAddUserOpen(false);
           setEditUserOpen(false);
           setEditUserData(null);
+          setAddUserForm({
+            userName: '',
+            userEmail: '',
+            userPassword: '',
+            userPassword_confirmation: '',
+            roleId: ''
+          });
+          setAddUserFieldErrors({});
         }}
         title={editUserData ? 'Edit User' : 'Add User'}
       >
@@ -269,10 +279,9 @@ export default function User() {
                 onChange={handleAddUserInputChange}
                 placeholder="Name"
                 className={`outline-none border px-3 py-2 rounded w-full ${addUserFieldErrors.userName ? 'border-red-500' : ''}`}
-                required
               />
               {addUserFieldErrors.userName && (
-                <div className="text-red-600 text-sm mt-1">{addUserFieldErrors.userName[0]}</div>
+                <div className="text-red-600 text-sm mt-1">{addUserFieldErrors.userName}</div>
               )}
             </div>
             <div>
@@ -283,10 +292,9 @@ export default function User() {
                 placeholder="Email"
                 type="email"
                 className={`outline-none border px-3 py-2 rounded w-full ${addUserFieldErrors.userEmail ? 'border-red-500' : ''}`}
-                required
               />
               {addUserFieldErrors.userEmail && (
-                <div className="text-red-600 text-sm mt-1">{addUserFieldErrors.userEmail[0]}</div>
+                <div className="text-red-600 text-sm mt-1">{addUserFieldErrors.userEmail}</div>
               )}
             </div>
 
@@ -300,10 +308,10 @@ export default function User() {
                     placeholder="Password"
                     type="password"
                     className={`outline-none border px-3 py-2 rounded w-full ${addUserFieldErrors.userPassword ? 'border-red-500' : ''}`}
-                    required
+
                   />
                   {addUserFieldErrors.userPassword && (
-                    <div className="text-red-600 text-sm mt-1">{addUserFieldErrors.userPassword[0]}</div>
+                    <div className="text-red-600 text-sm mt-1">{addUserFieldErrors.userPassword}</div>
                   )}
                 </div>
                 <div>
@@ -314,10 +322,10 @@ export default function User() {
                     placeholder="Confirm Password"
                     type="password"
                     className={`outline-none border px-3 py-2 rounded w-full ${addUserFieldErrors.userPassword_confirmation ? 'border-red-500' : ''}`}
-                    required
+
                   />
                   {addUserFieldErrors.userPassword_confirmation && (
-                    <div className="text-red-600 text-sm mt-1">{addUserFieldErrors.userPassword_confirmation[0]}</div>
+                    <div className="text-red-600 text-sm mt-1">{addUserFieldErrors.userPassword_confirmation}</div>
                   )}
                 </div>
               </>
@@ -329,7 +337,6 @@ export default function User() {
                 value={addUserForm.roleId}
                 onChange={handleAddUserInputChange}
                 className={`outline-none border px-3 py-2 rounded w-full ${addUserFieldErrors.roleId ? 'border-red-500' : ''}`}
-                required
               >
                 <option value="">Select Role</option>
                 {rolesForUser.map(role => (
@@ -339,7 +346,7 @@ export default function User() {
                 ))}
               </select>
               {addUserFieldErrors.roleId && (
-                <div className="text-red-600 text-sm mt-1">{addUserFieldErrors.roleId[0]}</div>
+                <div className="text-red-600 text-sm mt-1">{addUserFieldErrors.roleId}</div>
               )}
             </div>
 
@@ -350,6 +357,14 @@ export default function User() {
                   setAddUserOpen(false);
                   setEditUserOpen(false);
                   setEditUserData(null);
+                  setAddUserForm({
+                    userName: '',
+                    userEmail: '',
+                    userPassword: '',
+                    userPassword_confirmation: '',
+                    roleId: ''
+                  });
+                  setAddUserFieldErrors({});
                 }}
                 className="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400"
               >
